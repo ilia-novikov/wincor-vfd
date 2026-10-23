@@ -1,7 +1,7 @@
 # TODOs
 
-[ ] Basic operations
+[x] Basic operations
 [ ] CLI
 [ ] REST API
 [ ] status / healthz
-[ ] tests
+[x] tests
