@@ -16,3 +16,12 @@ type CharsetError struct {
 func (e *CharsetError) Error() string {
 	return fmt.Sprintf("only US and RU charsets are supported, got %q", e.Charset)
 }
+
+type PayloadTooLargeError struct {
+	Size int
+	Max  int
+}
+
+func (e *PayloadTooLargeError) Error() string {
+	return fmt.Sprintf("payload of %d bytes exceeds maximum of %d bytes", e.Size, e.Max)
+}

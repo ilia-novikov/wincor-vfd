@@ -82,20 +82,29 @@ func findDevicePath() (string, error) {
 	return path, nil
 }
 
-func createPacket(data []uint8) []uint8 {
+func createPacket(data []uint8) ([]uint8, error) {
 	msg := make([]uint8, 0, len(STX)+1+len(data))
 	msg = append(msg, STX...)
 	msg = append(msg, uint8(len(data)))
 	msg = append(msg, data...)
 
-	// TODO: Report size validation
+	// report[0] is the HID report ID
+	if len(msg) > ReportSize-1 {
+		return nil, &PayloadTooLargeError{Size: len(data), Max: ReportSize - 1 - len(STX) - 1}
+	}
+
 	report := make([]uint8, ReportSize)
 	report[0] = 0x00
 	copy(report[1:], msg)
-	return report
+	return report, nil
 }
 
 func (d *Display) WriteData(data []uint8) error {
-	_, err := d.device.Write(createPacket(data))
+	report, err := createPacket(data)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.device.Write(report)
 	return err
 }
