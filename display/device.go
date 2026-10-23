@@ -54,12 +54,16 @@ func (d *Display) Close() error {
 // resets the cursor to (0, 0).
 func (d *Display) Initialize() error {
 	if err := d.ClearDisplay(); err != nil {
-		return err
+		return fmt.Errorf("initializing display: clearing: %w", err)
 	}
 	if err := d.SetCharset(); err != nil {
-		return err
+		return fmt.Errorf("initializing display: setting charset: %w", err)
 	}
-	return d.MoveCursor(0, 0)
+	if err := d.MoveCursor(0, 0); err != nil {
+		return fmt.Errorf("initializing display: moving cursor: %w", err)
+	}
+
+	return nil
 }
 
 func findDevicePath() (string, error) {
@@ -105,6 +109,8 @@ func (d *Display) WriteData(data []uint8) error {
 		return err
 	}
 
-	_, err = d.device.Write(report)
-	return err
+	if _, err := d.device.Write(report); err != nil {
+		return fmt.Errorf("writing to display: %w", err)
+	}
+	return nil
 }

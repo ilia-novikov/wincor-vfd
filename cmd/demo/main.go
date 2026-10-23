@@ -13,6 +13,10 @@ func main() {
 	}
 	defer d.Close()
 
-	d.Initialize()
-	d.PrintText("Hello, wincor-vfd!")
+	if err := d.Initialize(); err != nil {
+		log.Fatalf("initializing display: %v", err)
+	}
+	if err := d.PrintText("Hello, wincor-vfd!"); err != nil {
+		log.Fatalf("printing text: %v", err)
+	}
 }
