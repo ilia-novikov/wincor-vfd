@@ -9,15 +9,14 @@ import (
 )
 
 var commands = map[string]func(*display.Display, []string) error{
-	"print":       printCmd,
-	"clear":       clearCmd,
-	"init":        initCmd,
-	"move":        moveCmd,
-	"set-charset": setCharsetCmd,
-	"bs":          backspaceCmd,
-	"lf":          linefeedCmd,
-	"cr":          carriageReturnCmd,
-	"delete-eol":  deleteToEndOfLineCmd,
+	"print":      printCmd,
+	"clear":      clearCmd,
+	"init":       initCmd,
+	"move":       moveCmd,
+	"bs":         backspaceCmd,
+	"lf":         linefeedCmd,
+	"cr":         carriageReturnCmd,
+	"delete-eol": deleteToEndOfLineCmd,
 }
 
 func printCmd(d *display.Display, args []string) error {
@@ -51,10 +50,6 @@ func moveCmd(d *display.Display, args []string) error {
 	}
 
 	return d.MoveCursor(x, y)
-}
-
-func setCharsetCmd(d *display.Display, _ []string) error {
-	return d.SetCharset()
 }
 
 func backspaceCmd(d *display.Display, _ []string) error {
