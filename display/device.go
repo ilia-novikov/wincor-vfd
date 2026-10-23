@@ -18,7 +18,7 @@ const (
 )
 
 var (
-	STX = []byte{0x02, 0x00}
+	STX = []uint8{0x02, 0x00}
 )
 
 type Display struct {
@@ -83,6 +83,16 @@ func (d *Display) SetLine(line int) error {
 	return d.write(cmd)
 }
 
+// PrintText encodes and writes text at the current cursor position.
+func (d *Display) PrintText(text string) error {
+	msg, err := encodeText(d.charset, text)
+	if err != nil {
+		return err
+	}
+
+	return d.write(msg)
+}
+
 func findDevicePath() (string, error) {
 	var path string
 
@@ -103,20 +113,20 @@ func findDevicePath() (string, error) {
 	return path, nil
 }
 
-func createPacket(data []byte) []byte {
-	msg := make([]byte, 0, len(STX)+1+len(data))
+func createPacket(data []uint8) []uint8 {
+	msg := make([]uint8, 0, len(STX)+1+len(data))
 	msg = append(msg, STX...)
-	msg = append(msg, byte(len(data)))
+	msg = append(msg, uint8(len(data)))
 	msg = append(msg, data...)
 
 	// TODO: Report size validation
-	report := make([]byte, ReportSize)
+	report := make([]uint8, ReportSize)
 	report[0] = 0x00
 	copy(report[1:], msg)
 	return report
 }
 
-func (d *Display) write(data []byte) error {
+func (d *Display) write(data []uint8) error {
 	_, err := d.device.Write(createPacket(data))
 	return err
 }

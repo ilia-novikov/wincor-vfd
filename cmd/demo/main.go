@@ -14,4 +14,5 @@ func main() {
 	defer d.Close()
 
 	d.Initialize()
+	d.PrintText("Hello, wincor-vfd!")
 }
