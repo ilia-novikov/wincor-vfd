@@ -19,7 +19,24 @@ func parseCharset(s string) (display.Charset, error) {
 	}
 }
 
+func usage() {
+	fmt.Fprintln(os.Stderr, "Usage: vfdctl [--charset us|ru] <command> [args...]")
+	fmt.Fprintln(os.Stderr, "\nFlags:")
+	flag.PrintDefaults()
+
+	names := make([]string, 0, len(commands))
+	for name := range commands {
+		names = append(names, name)
+	}
+
+	fmt.Fprintln(os.Stderr, "\nCommands:")
+	for _, name := range names {
+		fmt.Fprintf(os.Stderr, "  %-12s %s\n", name, commands[name].description)
+	}
+}
+
 func main() {
+	flag.Usage = usage
 	charsetName := flag.String("charset", "us", `charset to use: "us" or "ru"`)
 	flag.Parse()
 
@@ -31,7 +48,8 @@ func main() {
 
 func run(charsetName string, args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("usage: vfdctl [--charset us|ru] <command> [args...]")
+		usage()
+		return nil
 	}
 
 	charset, err := parseCharset(charsetName)
@@ -51,5 +69,5 @@ func run(charsetName string, args []string) error {
 	}
 	defer d.Close()
 
-	return handler(d, cmdArgs)
+	return handler.run(d, cmdArgs)
 }

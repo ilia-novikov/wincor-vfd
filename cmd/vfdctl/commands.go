@@ -8,15 +8,20 @@ import (
 	"github.com/ilia-novikov/wincor-vfd/display"
 )
 
-var commands = map[string]func(*display.Display, []string) error{
-	"print":      printCmd,
-	"clear":      clearCmd,
-	"init":       initCmd,
-	"move":       moveCmd,
-	"bs":         backspaceCmd,
-	"lf":         linefeedCmd,
-	"cr":         carriageReturnCmd,
-	"delete-eol": deleteToEndOfLineCmd,
+type command struct {
+	description string
+	run         func(*display.Display, []string) error
+}
+
+var commands = map[string]command{
+	"print":      {"print <text> — print text at the current cursor position", printCmd},
+	"clear":      {"clear the whole display", clearCmd},
+	"init":       {"clear, select charset, and reset the cursor to (0, 0)", initCmd},
+	"move":       {"move <x> <y> — move the cursor to the given 0-based column/row", moveCmd},
+	"bs":         {"move the cursor one space to the left", backspaceCmd},
+	"lf":         {"move the cursor down a line", linefeedCmd},
+	"cr":         {"move the cursor to the start of the current line", carriageReturnCmd},
+	"delete-eol": {"erase text to the end of the current line", deleteToEndOfLineCmd},
 }
 
 func printCmd(d *display.Display, args []string) error {
