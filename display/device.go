@@ -23,7 +23,7 @@ var (
 
 type Display struct {
 	device  *hid.Device
-	charset Charset // TODO: nullable?
+	charset Charset
 }
 
 // Open finds and opens the display, using the given charset
@@ -46,7 +46,20 @@ func (d *Display) Close() error {
 	if d.device == nil {
 		return nil
 	}
+
 	return d.device.Close()
+}
+
+// Initialize clears the display, selects the configured charset, and
+// resets the cursor to line 0
+func (d *Display) Initialize() error {
+	if err := d.ClearDisplay(); err != nil {
+		return err
+	}
+	if err := d.SetCharset(); err != nil {
+		return err
+	}
+	return d.SetLine(0)
 }
 
 // ClearDisplay clears the whole display
@@ -60,6 +73,17 @@ func (d *Display) SetCharset() error {
 	if err != nil {
 		return err
 	}
+
+	return d.write(cmd)
+}
+
+// SetLine moves the cursor to the start of the given line (0 or 1)
+func (d *Display) SetLine(line int) error {
+	cmd, err := setLineCmd(line)
+	if err != nil {
+		return err
+	}
+
 	return d.write(cmd)
 }
 

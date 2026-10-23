@@ -12,4 +12,6 @@ func main() {
 		log.Fatalf("opening display: %v", err)
 	}
 	defer d.Close()
+
+	d.Initialize()
 }
