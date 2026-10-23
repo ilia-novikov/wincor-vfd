@@ -26,7 +26,7 @@ type Display struct {
 	charset Charset
 }
 
-// Open finds and opens the display, using the given charset
+// Open finds and opens the display, using the given charset.
 func Open(charset Charset) (*Display, error) {
 	path, err := findDevicePath()
 	if err != nil {
@@ -41,7 +41,7 @@ func Open(charset Charset) (*Display, error) {
 	return &Display{device: dev, charset: charset}, nil
 }
 
-// Close releases the HID device handle
+// Close releases the HID device handle.
 func (d *Display) Close() error {
 	if d.device == nil {
 		return nil
@@ -51,7 +51,7 @@ func (d *Display) Close() error {
 }
 
 // Initialize clears the display, selects the configured charset, and
-// resets the cursor to line 0
+// resets the cursor to (0, 0).
 func (d *Display) Initialize() error {
 	if err := d.ClearDisplay(); err != nil {
 		return err
@@ -59,38 +59,7 @@ func (d *Display) Initialize() error {
 	if err := d.SetCharset(); err != nil {
 		return err
 	}
-	return d.SetLine(0)
-}
-
-// ClearDisplay clears the whole display
-func (d *Display) ClearDisplay() error {
-	return d.write(clearDisplayCmd)
-}
-
-// SetCharset selects the display's configured charset
-func (d *Display) SetCharset() error {
-	cmd := setCharsetCmd(d.charset)
-	return d.write(cmd)
-}
-
-// SetLine moves the cursor to the start of the given line (0 or 1)
-func (d *Display) SetLine(line int) error {
-	cmd, err := setLineCmd(line)
-	if err != nil {
-		return err
-	}
-
-	return d.write(cmd)
-}
-
-// PrintText encodes and writes text at the current cursor position.
-func (d *Display) PrintText(text string) error {
-	msg, err := encodeText(d.charset, text)
-	if err != nil {
-		return err
-	}
-
-	return d.write(msg)
+	return d.MoveCursor(0, 0)
 }
 
 func findDevicePath() (string, error) {
@@ -126,7 +95,7 @@ func createPacket(data []uint8) []uint8 {
 	return report
 }
 
-func (d *Display) write(data []uint8) error {
+func (d *Display) WriteData(data []uint8) error {
 	_, err := d.device.Write(createPacket(data))
 	return err
 }
