@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	d, err := display.Open(display.US)
+	d, err := display.Open(display.CharsetUS)
 	if err != nil {
 		log.Fatalf("opening display: %v", err)
 	}

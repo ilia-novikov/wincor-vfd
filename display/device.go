@@ -69,11 +69,7 @@ func (d *Display) ClearDisplay() error {
 
 // SetCharset selects the display's configured charset
 func (d *Display) SetCharset() error {
-	cmd, err := setCharsetCmd(d.charset)
-	if err != nil {
-		return err
-	}
-
+	cmd := setCharsetCmd(d.charset)
 	return d.write(cmd)
 }
 

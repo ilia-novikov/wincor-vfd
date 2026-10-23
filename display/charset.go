@@ -1,8 +1,8 @@
 package display
 
-type Charset string
+type Charset uint8
 
 const (
-	US Charset = "US"
-	RU Charset = "RU"
+	CharsetUS Charset = 0x00
+	CharsetRU Charset = 0x35
 )
