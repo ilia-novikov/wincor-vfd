@@ -1,12 +1,12 @@
 package display
 
 import (
-	"errors"
 	"fmt"
 
 	hid "github.com/sstallion/go-hid"
 )
 
+// TODO: Add support for other display params?
 const (
 	VendorID  = 0x0AA7
 	ProductID = 0x0200
@@ -97,7 +97,7 @@ func findDevicePath() (string, error) {
 	}
 
 	if path == "" {
-		return "", errors.New("display interface not found")
+		return "", &DeviceNotFoundError{}
 	}
 
 	return path, nil
