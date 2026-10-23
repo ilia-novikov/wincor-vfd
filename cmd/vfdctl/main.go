@@ -39,6 +39,17 @@ func run(charsetName string, args []string) error {
 		return err
 	}
 
-	fmt.Println(charset)
-	return nil
+	cmd, cmdArgs := args[0], args[1:]
+	handler, ok := commands[cmd]
+	if !ok {
+		return fmt.Errorf("unknown command %q", cmd)
+	}
+
+	d, err := display.Open(charset)
+	if err != nil {
+		return fmt.Errorf("opening display: %w", err)
+	}
+	defer d.Close()
+
+	return handler(d, cmdArgs)
 }
