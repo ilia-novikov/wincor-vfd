@@ -13,6 +13,13 @@ func New(token string) http.Handler {
 	mux.HandleFunc("GET /readyz", readyzHandler)
 
 	mux.HandleFunc("POST /v1/print", printHandler)
+	mux.HandleFunc("POST /v1/clear", clearHandler)
+	mux.HandleFunc("POST /v1/init", initHandler)
+	mux.HandleFunc("PUT /v1/cursor", cursorHandler)
+	mux.HandleFunc("POST /v1/backspace", backspaceHandler)
+	mux.HandleFunc("POST /v1/linefeed", linefeedHandler)
+	mux.HandleFunc("POST /v1/carriage-return", carriageReturnHandler)
+	mux.HandleFunc("POST /v1/delete-to-eol", deleteToEOLHandler)
 
 	var h http.Handler = mux
 	h = withAuth(h, token)
