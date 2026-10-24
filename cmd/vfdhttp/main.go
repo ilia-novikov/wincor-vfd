@@ -20,7 +20,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:    *addr,
-		Handler: httpapi.New(),
+		Handler: httpapi.New(os.Getenv("VFD_API_TOKEN")),
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
