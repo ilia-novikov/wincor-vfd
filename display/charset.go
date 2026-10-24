@@ -2,8 +2,10 @@ package display
 
 import "golang.org/x/text/encoding/charmap"
 
+// Charset selects the display's character encoding.
 type Charset uint8
 
+// Supported charsets.
 const (
 	CharsetUS Charset = 0x00
 	CharsetRU Charset = 0x35

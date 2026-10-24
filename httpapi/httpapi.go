@@ -1,3 +1,6 @@
+// Package httpapi exposes the display over a REST API. Each request opens
+// and closes the underlying HID device itself; the server never holds the
+// handle open between requests.
 package httpapi
 
 import (
