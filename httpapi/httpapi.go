@@ -12,6 +12,8 @@ func New(token string) http.Handler {
 	mux.HandleFunc("GET /healthz", healthzHandler)
 	mux.HandleFunc("GET /readyz", readyzHandler)
 
+	mux.HandleFunc("POST /v1/print", printHandler)
+
 	var h http.Handler = mux
 	h = withAuth(h, token)
 	h = withLogging(h)

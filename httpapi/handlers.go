@@ -19,8 +19,44 @@ func readyzHandler(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func writeError(w http.ResponseWriter, status int, msg string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{"error": msg})
+func printHandler(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Text string `json:"text"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+	if req.Text == "" {
+		writeError(w, http.StatusBadRequest, "text must not be empty")
+		return
+	}
+
+	withDisplay(w, r, func(d *display.Display) error {
+		return d.PrintText(req.Text)
+	})
+}
+
+// withDisplay opens the display for the request's charset, runs fn, and
+// closes it again.
+func withDisplay(w http.ResponseWriter, r *http.Request, fn func(*display.Display) error) {
+	charset, err := parseCharset(r)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	d, err := display.Open(charset)
+	if err != nil {
+		writeDeviceError(w, err)
+		return
+	}
+	defer d.Close()
+
+	if err := fn(d); err != nil {
+		writeDeviceError(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
