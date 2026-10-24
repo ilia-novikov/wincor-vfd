@@ -1,4 +1,12 @@
-# wincor-vfd
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ▄▄   ▄▄ ▄▄ ▄▄  ▄▄  ▄▄▄▄  ▄▄▄  ▄▄▄▄      ▄▄ ▄▄ ▄▄▄▄▄ ▄▄▄▄   │
+│  ██ ▄ ██ ██ ███▄██ ██▀▀▀ ██▀██ ██▄█▄ ▄▄▄ ██▄██ ██▄▄  ██▀██  │
+│   ▀█▀█▀  ██ ██ ▀██ ▀████ ▀███▀ ██ ██      ▀█▀  ██    ████▀  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
 
 A Go driver for Wincor Nixdorf VFD (vacuum fluorescent display) customer-facing
 displays used in ATMs/POS terminals, communicating over USB HID. Was tested on
@@ -43,4 +51,4 @@ Use `--help` to get a more detailed description of supported commands.
 
 ## License
 
-MIT -> [LICENSE](LICENSE).
+See [LICENSE](LICENSE).
