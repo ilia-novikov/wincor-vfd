@@ -17,7 +17,7 @@ func (d *Display) SendBackspace() error {
 }
 
 // SendLineFeed moves the cursor down a line, the column position remains the same.
-// If the cursors is already on the last line, the contents of the last line is
+// If the cursor is already on the last line, the contents of the last line is
 // copied to the first line and the last line is deleted.
 func (d *Display) SendLineFeed() error {
 	return d.WriteData(lineFeedCmd)
@@ -44,8 +44,8 @@ func (d *Display) MoveCursor(x, y int) error {
 	return d.WriteData(moveCursorCmd(x, y))
 }
 
-// DeleteToEndOfLine erases text to the end the current line, cursor position
-// included. The cursor position remains unchanged.
+// DeleteToEndOfLine erases text to the end of the current line, cursor
+// position included. The cursor position remains unchanged.
 func (d *Display) DeleteToEndOfLine() error {
 	return d.WriteData(deleteToEndOfLineCmd)
 }
