@@ -49,6 +49,23 @@ go run ./cmd/vfdctl move 3 1
 
 Use `--help` to get a more detailed description of supported commands.
 
+## REST API
+
+`cmd/vfdhttp` exposes the same operations over HTTP, for cases where the
+display is driven remotely rather than from a local process. Each request
+opens and closes the device itself, so the server never holds it open and
+can coexist with `vfdctl` or other clients between requests.
+
+```sh
+go run ./cmd/vfdhttp --addr localhost:8080
+
+curl -X POST localhost:8080/v1/print -d '{"text": "Hello, wincor-vfd!"}'
+curl -X PUT localhost:8080/v1/cursor -d '{"x": 3, "y": 1}'
+```
+
+Setting the `VFD_API_TOKEN` environment variable requires an `Authorization: Bearer <token>`
+header on all `/v1/*` routes. See `httpapi/openapi.yaml` for the full reference.
+
 ## License
 
 See [LICENSE](LICENSE).

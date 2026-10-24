@@ -1,3 +1,4 @@
+// Package display drives a Wincor Nixdorf VFD customer display over USB HID.
 package display
 
 import (
@@ -6,7 +7,7 @@ import (
 	hid "github.com/sstallion/go-hid"
 )
 
-// TODO: Add support for other display params?
+// USB HID identifiers used to find the display.
 const (
 	VendorID  = 0x0AA7
 	ProductID = 0x0200
@@ -17,10 +18,10 @@ const (
 	CharsPerLine = 20
 )
 
-var (
-	STX = []uint8{0x02, 0x00}
-)
+// STX marks the start of a packet sent to the display.
+var STX = []uint8{0x02, 0x00}
 
+// Display is an open handle to a Wincor Nixdorf VFD display.
 type Display struct {
 	device  *hid.Device
 	charset Charset
@@ -39,6 +40,12 @@ func Open(charset Charset) (*Display, error) {
 	}
 
 	return &Display{device: dev, charset: charset}, nil
+}
+
+// Probe checks whether the display is present without opening it.
+func Probe() error {
+	_, err := findDevicePath()
+	return err
 }
 
 // Close releases the HID device handle.
@@ -103,6 +110,7 @@ func createPacket(data []uint8) ([]uint8, error) {
 	return report, nil
 }
 
+// WriteData packs and writes a raw command payload to the display.
 func (d *Display) WriteData(data []uint8) error {
 	report, err := createPacket(data)
 	if err != nil {
