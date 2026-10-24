@@ -3,23 +3,21 @@ package httpapi
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/ilia-novikov/wincor-vfd/display"
 )
 
-func healthzHandler(w http.ResponseWriter, _ *http.Request) {
+func (s *server) healthzHandler(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func readyzHandler(w http.ResponseWriter, _ *http.Request) {
-	if err := display.Probe(); err != nil {
+func (s *server) readyzHandler(w http.ResponseWriter, _ *http.Request) {
+	if err := s.probe(); err != nil {
 		writeError(w, http.StatusServiceUnavailable, err.Error())
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 }
 
-func printHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) printHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Text string `json:"text"`
 	}
@@ -32,20 +30,20 @@ func printHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	withDisplay(w, r, func(d *display.Display) error {
+	s.withDevice(w, r, func(d Device) error {
 		return d.PrintText(req.Text)
 	})
 }
 
-func clearHandler(w http.ResponseWriter, r *http.Request) {
-	withDisplay(w, r, func(d *display.Display) error { return d.ClearDisplay() })
+func (s *server) clearHandler(w http.ResponseWriter, r *http.Request) {
+	s.withDevice(w, r, func(d Device) error { return d.ClearDisplay() })
 }
 
-func initHandler(w http.ResponseWriter, r *http.Request) {
-	withDisplay(w, r, func(d *display.Display) error { return d.Initialize() })
+func (s *server) initHandler(w http.ResponseWriter, r *http.Request) {
+	s.withDevice(w, r, func(d Device) error { return d.Initialize() })
 }
 
-func cursorHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) cursorHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		X int `json:"x"`
 		Y int `json:"y"`
@@ -55,35 +53,35 @@ func cursorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	withDisplay(w, r, func(d *display.Display) error { return d.MoveCursor(req.X, req.Y) })
+	s.withDevice(w, r, func(d Device) error { return d.MoveCursor(req.X, req.Y) })
 }
 
-func backspaceHandler(w http.ResponseWriter, r *http.Request) {
-	withDisplay(w, r, func(d *display.Display) error { return d.SendBackspace() })
+func (s *server) backspaceHandler(w http.ResponseWriter, r *http.Request) {
+	s.withDevice(w, r, func(d Device) error { return d.SendBackspace() })
 }
 
-func linefeedHandler(w http.ResponseWriter, r *http.Request) {
-	withDisplay(w, r, func(d *display.Display) error { return d.SendLineFeed() })
+func (s *server) linefeedHandler(w http.ResponseWriter, r *http.Request) {
+	s.withDevice(w, r, func(d Device) error { return d.SendLineFeed() })
 }
 
-func carriageReturnHandler(w http.ResponseWriter, r *http.Request) {
-	withDisplay(w, r, func(d *display.Display) error { return d.SendCarriageReturn() })
+func (s *server) carriageReturnHandler(w http.ResponseWriter, r *http.Request) {
+	s.withDevice(w, r, func(d Device) error { return d.SendCarriageReturn() })
 }
 
-func deleteToEOLHandler(w http.ResponseWriter, r *http.Request) {
-	withDisplay(w, r, func(d *display.Display) error { return d.DeleteToEndOfLine() })
+func (s *server) deleteToEOLHandler(w http.ResponseWriter, r *http.Request) {
+	s.withDevice(w, r, func(d Device) error { return d.DeleteToEndOfLine() })
 }
 
-// withDisplay opens the display for the request's charset, runs fn, and
+// withDevice opens the display for the request's charset, runs fn, and
 // closes it again.
-func withDisplay(w http.ResponseWriter, r *http.Request, fn func(*display.Display) error) {
+func (s *server) withDevice(w http.ResponseWriter, r *http.Request, fn func(Device) error) {
 	charset, err := parseCharset(r)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	d, err := display.Open(charset)
+	d, err := s.open(charset)
 	if err != nil {
 		writeDeviceError(w, err)
 		return

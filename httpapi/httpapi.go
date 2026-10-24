@@ -2,24 +2,42 @@ package httpapi
 
 import (
 	"net/http"
+
+	"github.com/ilia-novikov/wincor-vfd/display"
 )
+
+type server struct {
+	open  OpenFunc
+	probe ProbeFunc
+	token string
+}
 
 // New builds the HTTP handler for the display REST API. If token is
 // non-empty, all /v1/* routes require an "Authorization: Bearer <token>" header
 func New(token string) http.Handler {
+	return newServer(token, defaultOpener, display.Probe)
+}
+
+func defaultOpener(charset display.Charset) (Device, error) {
+	return display.Open(charset)
+}
+
+func newServer(token string, open OpenFunc, probe ProbeFunc) http.Handler {
+	s := &server{open: open, probe: probe, token: token}
+
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /healthz", healthzHandler)
-	mux.HandleFunc("GET /readyz", readyzHandler)
+	mux.HandleFunc("GET /healthz", s.healthzHandler)
+	mux.HandleFunc("GET /readyz", s.readyzHandler)
 
-	mux.HandleFunc("POST /v1/print", printHandler)
-	mux.HandleFunc("POST /v1/clear", clearHandler)
-	mux.HandleFunc("POST /v1/init", initHandler)
-	mux.HandleFunc("PUT /v1/cursor", cursorHandler)
-	mux.HandleFunc("POST /v1/backspace", backspaceHandler)
-	mux.HandleFunc("POST /v1/linefeed", linefeedHandler)
-	mux.HandleFunc("POST /v1/carriage-return", carriageReturnHandler)
-	mux.HandleFunc("POST /v1/delete-to-eol", deleteToEOLHandler)
+	mux.HandleFunc("POST /v1/print", s.printHandler)
+	mux.HandleFunc("POST /v1/clear", s.clearHandler)
+	mux.HandleFunc("POST /v1/init", s.initHandler)
+	mux.HandleFunc("PUT /v1/cursor", s.cursorHandler)
+	mux.HandleFunc("POST /v1/backspace", s.backspaceHandler)
+	mux.HandleFunc("POST /v1/linefeed", s.linefeedHandler)
+	mux.HandleFunc("POST /v1/carriage-return", s.carriageReturnHandler)
+	mux.HandleFunc("POST /v1/delete-to-eol", s.deleteToEOLHandler)
 
 	var h http.Handler = mux
 	h = withAuth(h, token)
