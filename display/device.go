@@ -41,6 +41,12 @@ func Open(charset Charset) (*Display, error) {
 	return &Display{device: dev, charset: charset}, nil
 }
 
+// Probe checks whether the display is present without opening it.
+func Probe() error {
+	_, err := findDevicePath()
+	return err
+}
+
 // Close releases the HID device handle.
 func (d *Display) Close() error {
 	if d.device == nil {
