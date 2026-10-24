@@ -1,12 +1,6 @@
-```
-┌─────────────────────────────────────────────────────────────┐
-│  ▄▄   ▄▄ ▄▄ ▄▄  ▄▄  ▄▄▄▄  ▄▄▄  ▄▄▄▄      ▄▄ ▄▄ ▄▄▄▄▄ ▄▄▄▄   │
-│  ██ ▄ ██ ██ ███▄██ ██▀▀▀ ██▀██ ██▄█▄ ▄▄▄ ██▄██ ██▄▄  ██▀██  │
-│   ▀█▀█▀  ██ ██ ▀██ ▀████ ▀███▀ ██ ██      ▀█▀  ██    ████▀  │
-└─────────────────────────────────────────────────────────────┘
-```
+# wincor-vfd
 
----
+![hero](hero.jpg)
 
 A Go driver for Wincor Nixdorf VFD (vacuum fluorescent display) customer-facing
 displays used in ATMs/POS terminals, communicating over USB HID. Was tested on
